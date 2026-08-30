@@ -13,6 +13,11 @@ provider "google" {
   region  = var.region
 }
 
+provider "google-beta" {
+  project = var.project_id
+  region  = var.region
+}
+
 # ============================================================
 # REQUIRED APIS
 # ============================================================
@@ -181,7 +186,8 @@ resource "google_cloud_run_v2_service" "ai_coin_matching_service" {
 # FIREBASE HOSTING (frontend) - project must be Firebase-enabled
 # ============================================================
 resource "google_firebase_hosting_site" "frontend" {
-  provider = google
+  provider = google-beta
+  # provider = google
   project  = var.project_id
   site_id  = "${var.app_name}-frontend"
 }
