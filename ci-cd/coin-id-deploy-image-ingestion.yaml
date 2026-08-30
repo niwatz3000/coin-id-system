@@ -23,7 +23,7 @@ substitutions:
   _REGION: asia-southeast1
   _REPO: coin-id-repo
 
-datasource:
-  url: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
-  username: ${SPRING_DATASOURCE_USERNAME:coinid}
-  password: ${SPRING_DATASOURCE_PASSWORD:P@ssw0rd99} 
+# datasource:
+#   url: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
+#   username: ${SPRING_DATASOURCE_USERNAME:coinid}
+#   password: ${SPRING_DATASOURCE_PASSWORD:P@ssw0rd99} 
