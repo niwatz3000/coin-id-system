@@ -5,7 +5,7 @@ spring:
   application:
     name: user-catalog-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/coinid}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://34.124.164.12:5432/coin-id-pg}
     username: ${SPRING_DATASOURCE_USERNAME:coinid}
     password: ${SPRING_DATASOURCE_PASSWORD:coinid}
   jpa:
