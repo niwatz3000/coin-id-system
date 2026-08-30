@@ -190,10 +190,49 @@ resource "google_cloud_run_v2_service" "ai_coin_matching_service" {
 # ============================================================
 # FIREBASE HOSTING (frontend) - project must be Firebase-enabled
 # ============================================================
+# resource "google_firebase_hosting_site" "frontend" {
+#   provider = google-beta
+#   # provider = google
+#   project  = var.project_id
+#   site_id = var.firebase_site_id
+#   #site_id  = "${var.app_name}-frontend"
+# }
+
+#########
+
+# Enable Firebase API
+resource "google_project_service" "firebase" {
+  project = var.project_id
+  service = "firebase.googleapis.com"
+  disable_on_destroy = false
+}
+
+# Enable Firebase Hosting API
+resource "google_project_service" "firebasehosting" {
+  project = var.project_id
+  service = "firebasehosting.googleapis.com"
+
+  disable_on_destroy = false
+}
+
+# Initialize GCP Project as Firebase Project
+resource "google_firebase_project" "default" {
+  provider = google-beta
+  project  = var.project_id
+
+  depends_on = [
+    google_project_service.firebase
+  ]
+}
+
+# Create Firebase Hosting Site
 resource "google_firebase_hosting_site" "frontend" {
   provider = google-beta
-  # provider = google
   project  = var.project_id
   site_id = var.firebase_site_id
-  #site_id  = "${var.app_name}-frontend"
+  depends_on = [
+    google_firebase_project.default,
+    google_project_service.firebasehosting
+  ]
 }
+
