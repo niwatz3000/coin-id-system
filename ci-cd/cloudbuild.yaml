@@ -27,8 +27,8 @@ steps:
     args:
       - -c
       - |
-        npm ci
-
+        npm install
+        #npm ci
         npx ng lint || true
         npx ng test --watch=false --browsers=ChromeHeadless || true
         npx ng build --configuration production
