@@ -7,7 +7,7 @@ steps:
     args:
       - -c
       - |
-        terraform init -input=false
+        terraform init -upgrade -input=false 
 
         terraform import google_pubsub_topic.coin_image_uploaded \
         projects/$PROJECT_ID/topics/coin-image-uploaded
