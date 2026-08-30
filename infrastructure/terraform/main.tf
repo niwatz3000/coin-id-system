@@ -44,86 +44,86 @@ resource "google_project_service" "required_apis" {
 # ============================================================
 # NETWORKING / LOAD BALANCER
 # ============================================================
-resource "google_compute_global_address" "default" {
-  name = "${var.app_name}-lb-ip"
-}
+# resource "google_compute_global_address" "default" {
+#   name = "${var.app_name}-lb-ip"
+# }
 
 # ============================================================
 # CLOUD STORAGE - coin images
 # ============================================================
-resource "google_storage_bucket" "coin_images" {
-  name                        = "${var.project_id}-coin-images"
-  location                    = var.region
-  force_destroy               = false
-  uniform_bucket_level_access = true
+# resource "google_storage_bucket" "coin_images" {
+#   name                        = "${var.project_id}-coin-images"
+#   location                    = var.region
+#   force_destroy               = false
+#   uniform_bucket_level_access = true
 
-  cors {
-    origin          = ["*"]
-    method          = ["GET", "POST", "PUT"]
-    response_header = ["*"]
-    max_age_seconds = 3600
-  }
-}
+#   cors {
+#     origin          = ["*"]
+#     method          = ["GET", "POST", "PUT"]
+#     response_header = ["*"]
+#     max_age_seconds = 3600
+#   }
+# }
 
 # ============================================================
 # CLOUD SQL - PostgreSQL (pgvector supported via Cloud SQL extension allowlist)
 # ============================================================
-resource "google_sql_database_instance" "postgres" {
-  name             = "${var.app_name}-pg"
-  database_version = "POSTGRES_15"
-  region            = var.region
+# resource "google_sql_database_instance" "postgres" {
+#   name             = "${var.app_name}-pg"
+#   database_version = "POSTGRES_15"
+#   region            = var.region
 
-  settings {
-    tier = var.db_tier
-    ip_configuration {
-      ipv4_enabled = true
-    }
-    backup_configuration {
-      enabled = true
-    }
-  }
+#   settings {
+#     tier = var.db_tier
+#     ip_configuration {
+#       ipv4_enabled = true
+#     }
+#     backup_configuration {
+#       enabled = true
+#     }
+#   }
 
-  deletion_protection = var.deletion_protection
-}
+#   deletion_protection = var.deletion_protection
+# }
 
-resource "google_sql_database" "coinid" {
-  name     = "coinid"
-  instance = google_sql_database_instance.postgres.name
-}
+# resource "google_sql_database" "coinid" {
+#   name     = "coinid"
+#   instance = google_sql_database_instance.postgres.name
+# }
 
-resource "google_sql_user" "coinid" {
-  name     = var.db_user
-  instance = google_sql_database_instance.postgres.name
-  password = var.db_password
-}
+# resource "google_sql_user" "coinid" {
+#   name     = var.db_user
+#   instance = google_sql_database_instance.postgres.name
+#   password = var.db_password
+# }
 
 # ============================================================
 # CLOUD PUB/SUB - image upload event bus
 # ============================================================
-resource "google_pubsub_topic" "coin_image_uploaded" {
-  name = "coin-image-uploaded"
-}
+# resource "google_pubsub_topic" "coin_image_uploaded" {
+#   name = "coin-image-uploaded"
+# }
 
-resource "google_pubsub_subscription" "coin_image_uploaded_sub" {
-  name  = "coin-image-uploaded-sub"
-  topic = google_pubsub_topic.coin_image_uploaded.id
+# resource "google_pubsub_subscription" "coin_image_uploaded_sub" {
+#   name  = "coin-image-uploaded-sub"
+#   topic = google_pubsub_topic.coin_image_uploaded.id
 
-  ack_deadline_seconds = 60
+#   ack_deadline_seconds = 60
 
-  retry_policy {
-    minimum_backoff = "10s"
-    maximum_backoff = "60s"
-  }
-}
+#   retry_policy {
+#     minimum_backoff = "10s"
+#     maximum_backoff = "60s"
+#   }
+# }
 
 # ============================================================
 # ARTIFACT REGISTRY - container images
 # ============================================================
-resource "google_artifact_registry_repository" "coin_id_repo" {
-  location      = var.region
-  repository_id = "${var.app_name}-repo"
-  format        = "DOCKER"
-}
+# resource "google_artifact_registry_repository" "coin_id_repo" {
+#   location      = var.region
+#   repository_id = "${var.app_name}-repo"
+#   format        = "DOCKER"
+# }
 
 # ============================================================
 # CLOUD RUN - User and Catalog Service
