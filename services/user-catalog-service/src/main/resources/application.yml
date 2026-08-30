@@ -1,13 +1,13 @@
 server:
-  port: 8088
+  port: 8080
 
 spring:
   application:
     name: user-catalog-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://34.124.164.12:5432/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg}
-    username: ${SPRING_DATASOURCE_USERNAME:coinid}
-    password: ${SPRING_DATASOURCE_PASSWORD:P@ssw0rd99}
+    url: ${SPRING_DATASOURCE_URL}
+    username: ${SPRING_DATASOURCE_USERNAME}
+    password: ${SPRING_DATASOURCE_PASSWORD}
   jpa:
     hibernate:
       ddl-auto: validate
