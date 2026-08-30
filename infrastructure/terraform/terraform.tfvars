@@ -1,6 +1,6 @@
 project_id          = "gcp-web-example"
 region              = "asia-southeast1"
-app_name            = "coin-id-system"
+app_name            = "coin-id"
 db_tier             = "db-custom-1-3840"
 db_user             = "coinid"
 db_password         = "P@ssw0rd999"
