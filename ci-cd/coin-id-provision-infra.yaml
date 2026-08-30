@@ -7,37 +7,40 @@ steps:
     args:
       - -c
       - |
+
+        terraform destroy -auto-approve
+        
         terraform init -upgrade -input=false 
 
-        terraform import google_pubsub_topic.coin_image_uploaded \
-        projects/$PROJECT_ID/topics/coin-image-uploaded
+        # terraform import google_pubsub_topic.coin_image_uploaded \
+        # projects/$PROJECT_ID/topics/coin-image-uploaded
 
-        terraform import google_sql_database_instance.coin_id_pg \
-        projects/$PROJECT_ID/instances/coin-id-pg
+        # terraform import google_sql_database_instance.coin_id_pg \
+        # projects/$PROJECT_ID/instances/coin-id-pg
 
-        terraform import \
-        google_firebase_hosting_site.frontend \
-        projects/$PROJECT_ID/sites/$_FIREBASE_SITE_ID      
+        # terraform import \
+        # google_firebase_hosting_site.frontend \
+        # projects/$PROJECT_ID/sites/$_FIREBASE_SITE_ID      
 
-        terraform import \
-        'google_compute_global_address.lb_ip' \
-        projects/$PROJECT_ID/global/addresses/coin-id-lb-ip
+        # terraform import \
+        # 'google_compute_global_address.lb_ip' \
+        # projects/$PROJECT_ID/global/addresses/coin-id-lb-ip
 
-        terraform import \
-        'google_storage_bucket.app_bucket' \
-        coin-id-bucket
+        # terraform import \
+        # 'google_storage_bucket.app_bucket' \
+        # coin-id-bucket
 
-        terraform import \
-        'google_sql_database_instance.postgres' \
-        projects/$PROJECT_ID/instances/coin-id-pg
+        # terraform import \
+        # 'google_sql_database_instance.postgres' \
+        # projects/$PROJECT_ID/instances/coin-id-pg
 
-        terraform import \
-        'google_pubsub_subscription.image_uploaded_sub' \
-        projects/$PROJECT_ID/subscriptions/coin-image-uploaded-sub
+        # terraform import \
+        # 'google_pubsub_subscription.image_uploaded_sub' \
+        # projects/$PROJECT_ID/subscriptions/coin-image-uploaded-sub
 
-        terraform import \
-        'google_artifact_registry_repository.repo' \
-        projects/$PROJECT_ID/locations/asia-southeast1/repositories/coin-repo
+        # terraform import \
+        # 'google_artifact_registry_repository.repo' \
+        # projects/$PROJECT_ID/locations/asia-southeast1/repositories/coin-repo
 
 
         terraform validate
