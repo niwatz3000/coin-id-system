@@ -8,6 +8,13 @@ steps:
       - -c
       - |
         terraform init -input=false
+
+        terraform import google_pubsub_topic.coin_image_uploaded \
+        projects/$PROJECT_ID/topics/coin-image-uploaded
+
+        terraform import google_sql_database_instance.coin_id_pg \
+        projects/$PROJECT_ID/instances/coin-id-pg
+
         terraform validate
         terraform plan -input=false -out=tfplan \
           -var="project_id=$PROJECT_ID" \
