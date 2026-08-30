@@ -28,9 +28,14 @@ steps:
       - -c
       - |
         npm ci
-        npm run lint || true
-        npm test -- --watch=false --browsers=ChromeHeadless || true
-        npm run build -- --configuration production
+
+        npx ng lint || true
+        npx ng test --watch=false --browsers=ChromeHeadless || true
+        npx ng build --configuration production
+
+        # npm run lint || true
+        # npm test -- --watch=false --browsers=ChromeHeadless || true
+        # npm run build -- --configuration production
 
   # ---------- User & Catalog Service (Java) ----------
   - id: user-catalog-test-build
