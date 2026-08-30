@@ -8,7 +8,9 @@ steps:
       - -c
       - |
 
+        terraform state list
         # terraform destroy -auto-approve        
+        terraform plan -refresh=true
         terraform init -upgrade -input=false 
         terraform validate
         terraform plan -input=false -out=tfplan \
