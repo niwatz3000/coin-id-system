@@ -89,3 +89,18 @@ gcloud builds submit --config ci-cd/cloudbuild.yaml \
 - Built-in GitHub App trigger (push/PR) with no webhook plumbing.
 - Same billing/project boundary as the rest of the infra (Cloud Run, Artifact
   Registry, Cloud SQL) — one place for logs, quotas, and cost.
+
+
+coin-id-build-all.yaml
+
+coin-id-build-user-catalog.yaml
+coin-id-build-ai-matching.yaml
+coin-id-build-image-ingestion.yaml
+
+coin-id-deploy-all.yaml
+
+coin-id-deploy-user-catalog.yaml
+coin-id-deploy-ai-matching.yaml
+coin-id-deploy-image-ingestion.yaml
+
+coin-id-provision-infra.yaml

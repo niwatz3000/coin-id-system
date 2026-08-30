@@ -189,5 +189,6 @@ resource "google_firebase_hosting_site" "frontend" {
   provider = google-beta
   # provider = google
   project  = var.project_id
-  site_id  = "${var.app_name}-frontend"
+  site_id = var.firebase_site_id
+  #site_id  = "${var.app_name}-frontend"
 }

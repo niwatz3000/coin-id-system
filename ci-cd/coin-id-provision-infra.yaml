@@ -15,6 +15,10 @@ steps:
         terraform import google_sql_database_instance.coin_id_pg \
         projects/$PROJECT_ID/instances/coin-id-pg
 
+        terraform import \
+        google_firebase_hosting_site.frontend \
+        projects/$PROJECT_ID/sites/$_FIREBASE_SITE_ID        
+
         terraform validate
         terraform plan -input=false -out=tfplan \
           -var="project_id=$PROJECT_ID" \
@@ -32,3 +36,4 @@ substitutions:
   _REGION: asia-southeast1
   _DB_PASSWORD: 'P@ssw0rd99'
   _VERTEX_AI_ENDPOINT: ''
+  _FIREBASE_SITE_ID: 'coin_id_frontend'
