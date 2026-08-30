@@ -1,0 +1,27 @@
+# Infrastructure pipeline: provision/update GCP resources with Terraform.
+steps:
+  - id: terraform-init-validate-plan-apply
+    name: hashicorp/terraform:1.7
+    dir: infrastructure/terraform
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        terraform init -input=false
+        terraform validate
+        terraform plan -input=false -out=tfplan \
+          -var="project_id=$PROJECT_ID" \
+          -var="region=${_REGION}" \
+          -var="db_password=${_DB_PASSWORD}" \
+          -var="vertex_ai_endpoint=${_VERTEX_AI_ENDPOINT}"
+        terraform apply -input=false -auto-approve tfplan
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _DB_PASSWORD: ''
+  _VERTEX_AI_ENDPOINT: ''

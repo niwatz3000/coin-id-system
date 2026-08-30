@@ -1,0 +1,31 @@
+# CI Build: User Catalog Service
+steps:
+  - id: user-catalog-test-build
+    name: maven:3.9-eclipse-temurin-17
+    dir: services/user-catalog-service
+    entrypoint: mvn
+    args: ['-B', 'clean', 'verify']
+
+  - id: user-catalog-docker-build
+    name: gcr.io/cloud-builders/docker
+    dir: services/user-catalog-service
+    args:
+      - build
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA'
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:latest'
+      - .
+
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo

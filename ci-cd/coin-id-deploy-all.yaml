@@ -1,0 +1,39 @@
+# CD: deploy previously published images using the exact source revision tag.
+# Invoke from a Cloud Build trigger so $SHORT_SHA is available.
+steps:
+  - id: deploy-user-catalog
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args: ['run', 'deploy', 'coin-id-user-catalog', '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA', '--region=${_REGION}', '--platform=managed', '--quiet']
+
+  - id: deploy-image-ingestion
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args: ['run', 'deploy', 'coin-id-image-ingestion', '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA', '--region=${_REGION}', '--platform=managed', '--quiet']
+
+  - id: deploy-ai-matching
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args: ['run', 'deploy', 'coin-id-ai-matching', '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA', '--region=${_REGION}', '--platform=managed', '--quiet']
+
+  # Cloud Build workspaces are isolated between builds, so rebuild the frontend here.
+  - id: deploy-frontend
+    name: node:20
+    dir: frontend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        npm install
+        npx ng build --configuration production
+        npx firebase-tools deploy --only hosting --project $PROJECT_ID --non-interactive
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo

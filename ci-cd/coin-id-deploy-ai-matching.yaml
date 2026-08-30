@@ -1,0 +1,24 @@
+# CD Deploy: coin-id-ai-matching
+# Deploy image built with the same commit tag ($SHORT_SHA).
+
+steps:
+  - id: deploy-ai-matching
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - coin-id-ai-matching
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA
+      - --region=${_REGION}
+      - --platform=managed
+      - --quiet
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+timeout: 1200s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo

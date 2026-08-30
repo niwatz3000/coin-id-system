@@ -1,0 +1,35 @@
+# CI Build: AI Coin Matching Service
+steps:
+  - id: ai-matching-test
+    name: python:3.11-slim
+    dir: services/ai-coin-matching-service
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
+        pytest
+
+  - id: ai-matching-docker-build
+    name: gcr.io/cloud-builders/docker
+    dir: services/ai-coin-matching-service
+    args:
+      - build
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA'
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:latest'
+      - .
+
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo
