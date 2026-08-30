@@ -116,7 +116,7 @@ resource "google_artifact_registry_repository" "coin_id_repo" {
 }
 
 # ============================================================
-# CLOUD RUN - User & Catalog Service
+# CLOUD RUN - User and Catalog Service
 # ============================================================
 resource "google_cloud_run_v2_service" "user_catalog_service" {
   name     = "${var.app_name}-user-catalog"

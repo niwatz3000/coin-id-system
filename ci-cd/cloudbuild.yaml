@@ -37,7 +37,7 @@ steps:
         # npm test -- --watch=false --browsers=ChromeHeadless || true
         # npm run build -- --configuration production
 
-  # ---------- User & Catalog Service (Java) ----------
+  # ---------- User and Catalog Service (Java) ----------
   - id: user-catalog-test-build
     name: maven:3.9-eclipse-temurin-17
     dir: services/user-catalog-service
