@@ -151,8 +151,26 @@ resource "google_cloud_run_v2_service" "image_ingestion_service" {
   location = var.region
 
   template {
+
+
+    volumes {
+      name = "cloudsql"
+
+      cloud_sql_instance {
+        instances = [
+          google_sql_database_instance.default.connection_name
+        ]
+      }
+    }
+
     containers {
       image = "${var.region}-docker.pkg.dev/${var.project_id}/${var.app_name}-repo/image-ingestion-service:latest"
+
+      volume_mounts {
+        name       = "cloudsql"
+        mount_path = "/cloudsql"
+      }
+
       env {
         name  = "GCS_BUCKET"
         value = google_storage_bucket.coin_images.name
