@@ -1,0 +1,36 @@
+# Node / Angular
+node_modules/
+dist/
+.angular/
+*.log
+
+# Java
+target/
+*.class
+.mvn/
+!.mvn/wrapper/maven-wrapper.jar
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.egg-info/
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+.terraform.lock.hcl
+terraform.tfvars
+
+# Env / secrets
+.env
+*.pem
+*.key
+service-account*.json
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store

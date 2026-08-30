@@ -1,0 +1,70 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: ankane/pgvector:latest
+    container_name: coinid-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: coinid
+      POSTGRES_PASSWORD: coinid
+      POSTGRES_DB: coinid
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/schema.sql
+
+  pubsub-emulator:
+    image: gcr.io/google.com/cloudsdktool/cloud-sdk:emulators
+    container_name: coinid-pubsub
+    command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
+    ports:
+      - "8085:8085"
+
+  user-catalog-service:
+    build: ./services/user-catalog-service
+    container_name: coinid-user-catalog
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/coinid
+      SPRING_DATASOURCE_USERNAME: coinid
+      SPRING_DATASOURCE_PASSWORD: coinid
+      JWT_SECRET: dev-secret-change-me
+    ports:
+      - "8081:8080"
+
+  image-ingestion-service:
+    build: ./services/image-ingestion-service
+    container_name: coinid-image-ingestion
+    depends_on:
+      - postgres
+      - pubsub-emulator
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/coinid
+      SPRING_DATASOURCE_USERNAME: coinid
+      SPRING_DATASOURCE_PASSWORD: coinid
+      PUBSUB_EMULATOR_HOST: pubsub-emulator:8085
+      GCS_BUCKET: coin-images-dev
+      GOOGLE_CLOUD_PROJECT: coinid-local
+    ports:
+      - "8082:8080"
+
+  ai-coin-matching-service:
+    build: ./services/ai-coin-matching-service
+    container_name: coinid-ai-matching
+    depends_on:
+      - postgres
+      - pubsub-emulator
+    environment:
+      DATABASE_URL: postgresql://coinid:coinid@postgres:5432/coinid
+      PUBSUB_EMULATOR_HOST: pubsub-emulator:8085
+      GOOGLE_CLOUD_PROJECT: coinid-local
+      PUBSUB_SUBSCRIPTION: coin-image-uploaded-sub
+      VERTEX_AI_ENDPOINT: ""
+    ports:
+      - "8083:8080"
+
+volumes:
+  pgdata:

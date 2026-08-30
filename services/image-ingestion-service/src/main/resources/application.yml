@@ -1,0 +1,31 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: image-ingestion-service
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/coinid}
+    username: ${SPRING_DATASOURCE_USERNAME:coinid}
+    password: ${SPRING_DATASOURCE_PASSWORD:coinid}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+
+gcp:
+  project-id: ${GOOGLE_CLOUD_PROJECT:coinid-local}
+  storage:
+    bucket: ${GCS_BUCKET:coin-images-dev}
+  pubsub:
+    topic: ${PUBSUB_TOPIC:coin-image-uploaded}
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info

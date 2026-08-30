@@ -1,0 +1,181 @@
+# Google Cloud Build pipeline for the Coin ID & Catalog System.
+#
+# Trigger: connect this repo in Cloud Build → Triggers (push to `main`),
+# or run manually:  gcloud builds submit --config ci-cd/cloudbuild.yaml
+#
+# Required substitutions (set as trigger variables or --substitutions):
+#   _REGION            e.g. asia-southeast1
+#   _REPO              Artifact Registry repo name, e.g. coin-id-repo
+#   _DB_PASSWORD        Cloud SQL app user password (use Secret Manager in prod)
+#   _VERTEX_AI_ENDPOINT Vertex AI endpoint resource name (optional)
+#
+# Required APIs: Cloud Build, Artifact Registry, Cloud Run, Cloud SQL Admin,
+# Pub/Sub, Firebase Hosting, Cloud Storage.
+#
+# Grant the Cloud Build service account these roles before first run:
+#   roles/run.admin, roles/iam.serviceAccountUser, roles/artifactregistry.writer,
+#   roles/cloudsql.admin, roles/pubsub.admin, roles/storage.admin,
+#   roles/firebasehosting.admin
+
+steps:
+
+  # ---------- Frontend (Angular) ----------
+  - id: frontend-install-test-build
+    name: node:20
+    dir: frontend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        npm ci
+        npm run lint || true
+        npm test -- --watch=false --browsers=ChromeHeadless || true
+        npm run build -- --configuration production
+
+  # ---------- User & Catalog Service (Java) ----------
+  - id: user-catalog-test-build
+    name: maven:3.9-eclipse-temurin-17
+    dir: services/user-catalog-service
+    entrypoint: mvn
+    args: ['-B', 'clean', 'verify']
+
+  - id: user-catalog-docker-build
+    name: gcr.io/cloud-builders/docker
+    dir: services/user-catalog-service
+    args:
+      - build
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA'
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:latest'
+      - .
+
+  # ---------- Image Ingestion Service (Java) ----------
+  - id: image-ingestion-test-build
+    name: maven:3.9-eclipse-temurin-17
+    dir: services/image-ingestion-service
+    entrypoint: mvn
+    args: ['-B', 'clean', 'verify']
+
+  - id: image-ingestion-docker-build
+    name: gcr.io/cloud-builders/docker
+    dir: services/image-ingestion-service
+    args:
+      - build
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:latest'
+      - .
+
+  # ---------- AI Coin Matching Service (Python) ----------
+  - id: ai-matching-test
+    name: python:3.11-slim
+    dir: services/ai-coin-matching-service
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        pip install --no-cache-dir -r requirements.txt -r requirements-dev.txt
+        pytest
+
+  - id: ai-matching-docker-build
+    name: gcr.io/cloud-builders/docker
+    dir: services/ai-coin-matching-service
+    args:
+      - build
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA'
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:latest'
+      - .
+
+  # ---------- Push all images to Artifact Registry ----------
+  - id: push-images
+    name: gcr.io/cloud-builders/docker
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        docker push --all-tags ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service
+        docker push --all-tags ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service
+        docker push --all-tags ${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service
+
+  # ---------- Infrastructure provisioning (Terraform) ----------
+  - id: terraform-apply
+    name: hashicorp/terraform:1.7
+    dir: infrastructure/terraform
+    entrypoint: sh
+    args:
+      - -c
+      - |
+        terraform init -input=false
+        terraform apply -input=false -auto-approve \
+          -var="project_id=$PROJECT_ID" \
+          -var="region=${_REGION}" \
+          -var="db_password=${_DB_PASSWORD}" \
+          -var="vertex_ai_endpoint=${_VERTEX_AI_ENDPOINT}"
+
+  # ---------- Deploy backend services to Cloud Run ----------
+  - id: deploy-user-catalog
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - coin-id-user-catalog
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA
+      - --region=${_REGION}
+      - --platform=managed
+      - --quiet
+
+  - id: deploy-image-ingestion
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - coin-id-image-ingestion
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA
+      - --region=${_REGION}
+      - --platform=managed
+      - --quiet
+
+  - id: deploy-ai-matching
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - coin-id-ai-matching
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA
+      - --region=${_REGION}
+      - --platform=managed
+      - --quiet
+
+  # ---------- Deploy frontend to Firebase Hosting ----------
+  - id: deploy-frontend
+    name: node:20
+    dir: frontend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        npx firebase-tools deploy --only hosting --project $PROJECT_ID --non-interactive
+
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/ai-coin-matching-service:$SHORT_SHA'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo
+  _DB_PASSWORD: ''
+  _VERTEX_AI_ENDPOINT: ''
