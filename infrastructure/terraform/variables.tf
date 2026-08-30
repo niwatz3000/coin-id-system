@@ -60,5 +60,5 @@ variable "github_connection_name" {
 variable "firebase_site_id" {
   description = "firebase site ID"
   type        = string
-  default     = "coin_id_frontend"
+  default     = "coin-id-frontend"
 }

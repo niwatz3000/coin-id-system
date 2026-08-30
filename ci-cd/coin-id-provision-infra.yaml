@@ -36,4 +36,4 @@ substitutions:
   _REGION: asia-southeast1
   _DB_PASSWORD: 'P@ssw0rd99'
   _VERTEX_AI_ENDPOINT: ''
-  _FIREBASE_SITE_ID: 'coin_id_frontend'
+  _FIREBASE_SITE_ID: 'coin-id-frontend'
