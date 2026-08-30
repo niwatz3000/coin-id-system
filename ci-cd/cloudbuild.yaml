@@ -60,7 +60,7 @@ steps:
     name: maven:3.9-eclipse-temurin-17
     dir: services/image-ingestion-service
     entrypoint: mvn
-    args: ['-B', 'clean', 'verify']
+    args: ['-X','-B', 'clean', 'verify']
 
   - id: image-ingestion-docker-build
     name: gcr.io/cloud-builders/docker
