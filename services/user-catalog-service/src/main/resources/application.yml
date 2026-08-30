@@ -5,9 +5,9 @@ spring:
   application:
     name: user-catalog-service
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://34.124.164.12:5432/coin-id-pg}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://34.124.164.12:5432/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg}
     username: ${SPRING_DATASOURCE_USERNAME:coinid}
-    password: ${SPRING_DATASOURCE_PASSWORD:coinid}
+    password: ${SPRING_DATASOURCE_PASSWORD:P@ssw0rd99}
   jpa:
     hibernate:
       ddl-auto: validate
@@ -26,3 +26,7 @@ management:
     web:
       exposure:
         include: health,info
+
+# spring.datasource.url=jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
+# spring.datasource.username=YOUR_USERNAME
+# spring.datasource.password=YOUR_PASSWORD
