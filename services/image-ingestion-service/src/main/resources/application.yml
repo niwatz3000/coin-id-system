@@ -10,13 +10,27 @@ spring:
       max-request-size: 10MB
   datasource:
     # url: ${SPRING_DATASOURCE_URL}
-    url: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
+    #url: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
+    url: jdbc:postgresql:///coin_id?cloudSqlInstance=gcp-web-example:asia-southeast1:coin-id-pg&socketFactory=com.google.cloud.sql.postgres.SocketFactory
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
+    driver-class-name: org.postgresql.Driver
+  # jpa:
+  #   hibernate:
+  #     ddl-auto: validate
+  #   open-in-view: false
+
   jpa:
     hibernate:
-      ddl-auto: validate
-    open-in-view: false
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+  hikari:
+    maximum-pool-size: 5
+    minimum-idle: 1
+    connection-timeout: 10000  
 
 gcp:
   project-id: ${GOOGLE_CLOUD_PROJECT:coinid-local}
