@@ -4,7 +4,7 @@ steps:
     name: maven:3.9-eclipse-temurin-17
     dir: services/user-catalog-service
     entrypoint: mvn
-    args: ['-B', 'clean', 'verify']
+    args: ['-X', '-B', 'clean', 'verify']
 
   - id: user-catalog-docker-build
     name: gcr.io/cloud-builders/docker
@@ -29,3 +29,6 @@ timeout: 2400s
 substitutions:
   _REGION: asia-southeast1
   _REPO: coin-id-repo
+  _DB_URL: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
+  _DB_USERNAME: coinid
+  _DB_PASSWORD: P@ssw0rd99
