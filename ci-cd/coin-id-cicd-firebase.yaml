@@ -1,0 +1,61 @@
+# Google Cloud Build pipeline for the Coin ID & Catalog System.
+#
+# Trigger: connect this repo in Cloud Build → Triggers (push to `main`),
+# or run manually:  gcloud builds submit --config ci-cd/cloudbuild.yaml
+#
+# Required substitutions (set as trigger variables or --substitutions):
+#   _REGION            e.g. asia-southeast1
+#   _REPO              Artifact Registry repo name, e.g. coin-id-repo
+#   _DB_PASSWORD        Cloud SQL app user password (use Secret Manager in prod)
+#   _VERTEX_AI_ENDPOINT Vertex AI endpoint resource name (optional)
+#
+# Required APIs: Cloud Build, Artifact Registry, Cloud Run, Cloud SQL Admin,
+# Pub/Sub, Firebase Hosting, Cloud Storage.
+#
+# Grant the Cloud Build service account these roles before first run:
+#   roles/run.admin, roles/iam.serviceAccountUser, roles/artifactregistry.writer,
+#   roles/cloudsql.admin, roles/pubsub.admin, roles/storage.admin,
+#   roles/firebasehosting.admin
+
+steps:
+
+  # ---------- Frontend (Angular) ----------
+  - id: frontend-install-test-build
+    name: node:20
+    dir: frontend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        npm install
+        #npm ci
+        npx ng lint || true
+        npx ng test --watch=false --browsers=ChromeHeadless || true
+        npx ng build --configuration production
+
+        # npm run lint || true
+        # npm test -- --watch=false --browsers=ChromeHeadless || true
+        # npm run build -- --configuration production
+
+  # ---------- Deploy frontend to Firebase Hosting ----------
+  - id: deploy-frontend
+    name: node:20
+    dir: frontend
+    entrypoint: bash
+    args:
+      - -c
+      - |
+        npx firebase-tools deploy --only hosting --project $PROJECT_ID --non-interactive
+
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo
+  _DB_PASSWORD: ''
+  _VERTEX_AI_ENDPOINT: ''

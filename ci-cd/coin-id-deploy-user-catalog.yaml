@@ -9,8 +9,8 @@ steps:
       - run
       - deploy
       - coin-id-user-catalog
-      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA
-      - --region=${_REGION}
+      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/user-catalog-service:$SHORT_SHA'
+      - '--region=${_REGION}'
       # รวม Environment Variables ไว้ใน flag เดียว
       - '--set-env-vars=DB_URL=${_DB_URL},DB_USERNAME=${_DB_USERNAME},DB_PASSWORD=${_DB_PASSWORD},SPRING_DATASOURCE_USERNAME=coinid'
       # ดึง Secret Password จาก Secret Manager
