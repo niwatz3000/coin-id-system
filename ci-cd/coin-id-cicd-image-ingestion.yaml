@@ -36,6 +36,7 @@ steps:
       - coin-id-image-ingestion
       - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
       - '--region=${_REGION}'
+      - '--set-env-vars=DB_URL=${_DB_URL},DB_USERNAME=${_DB_USERNAME},DB_PASSWORD=${_DB_PASSWORD}'
       - '--platform=managed'
       - '--quiet'
 
@@ -51,3 +52,6 @@ timeout: 2400s
 substitutions:
   _REGION: asia-southeast1
   _REPO: coin-id-repo
+  _DB_URL: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
+  _DB_USERNAME: coinid
+  _DB_PASSWORD: P@ssw0rd99
