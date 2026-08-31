@@ -36,10 +36,23 @@ steps:
       - coin-id-image-ingestion
       - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
       - '--region=${_REGION}'
-      - '--set-env-vars=DB_URL=${_DB_URL},DB_USERNAME=${_DB_USERNAME},DB_PASSWORD=${_DB_PASSWORD}'
+      # - '--set-env-vars=DB_URL=${_DB_URL},DB_USERNAME=${_DB_USERNAME},DB_PASSWORD=${_DB_PASSWORD}'
+      # - '--set-env-vars=SPRING_DATASOURCE_USERNAME=coinid'
+      # - '--set-secrets=SPRING_DATASOURCE_PASSWORD=coin-id-db-password:latest'
+      # # เชื่อมต่อ Cloud SQL Instance
+      # - '--add-cloudsql-instances=gcp-web-example:asia-southeast1:coin-id-pg'
+      # - '--platform=managed'
+      # - '--quiet'
+
+      # รวม Environment Variables ไว้ใน flag เดียว
+      - '--set-env-vars=DB_URL=${_DB_URL},DB_USERNAME=${_DB_USERNAME},DB_PASSWORD=${_DB_PASSWORD},SPRING_DATASOURCE_USERNAME=coinid'
+      # ดึง Secret Password จาก Secret Manager
       - '--set-secrets=SPRING_DATASOURCE_PASSWORD=coin-id-db-password:latest'
+      # เชื่อมต่อ Cloud SQL Instance
+      - '--add-cloudsql-instances=gcp-web-example:asia-southeast1:coin-id-pg'
       - '--platform=managed'
       - '--quiet'
+
 
 
 images:
