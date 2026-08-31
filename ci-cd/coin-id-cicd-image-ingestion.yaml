@@ -1,11 +1,13 @@
-# CI/CD Build & Deploy: Image Ingestion Service
 steps:
   # 1. Test & Build Java Application
   - id: image-ingestion-test-build
     name: maven:3.9-eclipse-temurin-17
     dir: services/image-ingestion-service
     entrypoint: mvn
-    args: ['-X', '-B', 'clean', 'verify']
+    args:
+      - '-B'
+      - 'clean'
+      - 'verify'
 
   # 2. Build Docker Image
   - id: image-ingestion-docker-build
@@ -19,7 +21,21 @@ steps:
       - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:latest'
       - .
 
-  # 3. Deploy to Cloud Run
+  # 3. Push Image with commit SHA
+  - id: image-ingestion-docker-push
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+
+  # 4. Push latest
+  - id: image-ingestion-docker-push-latest
+    name: gcr.io/cloud-builders/docker
+    args:
+      - push
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:latest'
+
+  # 5. Deploy to Cloud Run
   - id: deploy-image-ingestion
     name: gcr.io/google.com/cloudsdktool/cloud-sdk
     entrypoint: gcloud
@@ -27,13 +43,14 @@ steps:
       - run
       - deploy
       - coin-id-image-ingestion
-      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA
-      - --region=${_REGION}
-      - --platform=managed
-      - --quiet
+      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--quiet'
 
 images:
   - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:latest'
 
 options:
   logging: CLOUD_LOGGING_ONLY
