@@ -37,8 +37,10 @@ steps:
       - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
       - '--region=${_REGION}'
       - '--set-env-vars=DB_URL=${_DB_URL},DB_USERNAME=${_DB_USERNAME},DB_PASSWORD=${_DB_PASSWORD}'
+      - '--set-secrets=SPRING_DATASOURCE_PASSWORD=coin-id-db-password:latest'
       - '--platform=managed'
       - '--quiet'
+
 
 images:
   - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
