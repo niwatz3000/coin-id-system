@@ -1,0 +1,50 @@
+# CI Build: Image Ingestion Service
+steps:
+  - id: image-ingestion-test-build
+    name: maven:3.9-eclipse-temurin-17
+    dir: services/image-ingestion-service
+    entrypoint: mvn
+    args: ['-X', '-B', 'clean', 'verify']
+
+  - id: image-ingestion-docker-build
+    name: gcr.io/cloud-builders/docker
+    dir: services/image-ingestion-service
+    args:
+      - build
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+      - -t
+      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:latest'
+      - .
+
+images:
+  - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA'
+
+
+steps:
+  - id: deploy-image-ingestion
+    name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    entrypoint: gcloud
+    args:
+      - run
+      - deploy
+      - coin-id-image-ingestion
+      - --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/image-ingestion-service:$SHORT_SHA
+      - --region=${_REGION}
+      - --platform=managed
+      - --quiet
+
+options:
+  logging: CLOUD_LOGGING_ONLY
+  machineType: E2_HIGHCPU_8
+
+timeout: 2400s
+
+substitutions:
+  _REGION: asia-southeast1
+  _REPO: coin-id-repo
+
+
+
+  #  1
+  #  2
