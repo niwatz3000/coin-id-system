@@ -9,8 +9,6 @@ spring:
       max-file-size: 10MB
       max-request-size: 10MB
   datasource:
-    # url: ${SPRING_DATASOURCE_URL}
-    #url: jdbc:postgresql://localhost/coin_id?host=/cloudsql/gcp-web-example:asia-southeast1:coin-id-pg
     url: jdbc:postgresql:///coin_id?cloudSqlInstance=gcp-web-example:asia-southeast1:coin-id-pg&socketFactory=com.google.cloud.sql.postgres.SocketFactory
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
