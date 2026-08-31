@@ -59,6 +59,12 @@ steps:
         firebase deploy --only hosting --token "$$FIREBASE_TOKEN"
     secretEnv: ['FIREBASE_TOKEN']  
 
+# 2. ต้องประกาศส่วนนี้เพิ่มที่ท้ายไฟล์เพื่อ Define ตัวแปร Secret
+availableSecrets:
+  secretManager:
+  - versionName: projects/$PROJECT_ID/secrets/FIREBASE_TOKEN/versions/latest
+    env: 'FIREBASE_TOKEN'    
+
 
 options:
   logging: CLOUD_LOGGING_ONLY
