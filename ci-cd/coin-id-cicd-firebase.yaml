@@ -41,7 +41,10 @@ steps:
       - '-c'
       - |
         set -e
-        echo "$$FIREBASE_SERVICE_ACCOUNT" > /tmp/firebase-sa.json
+        
+        echo "$$FIREBASE_SERVICE_ACCOUNT" \
+          > /tmp/firebase-sa.json
+
         export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-sa.json
 
         npm install -g firebase-tools
