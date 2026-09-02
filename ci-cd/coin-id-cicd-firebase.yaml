@@ -41,7 +41,7 @@ steps:
       - '-c'
       - |
         set -e
-        
+
         echo "$$FIREBASE_SERVICE_ACCOUNT" \
           > /tmp/firebase-sa.json
 
@@ -64,7 +64,10 @@ steps:
 availableSecrets:
   secretManager:
     - versionName: projects/$PROJECT_ID/secrets/firebase-deploy-sa/versions/latest
-      env: FIREBASE_SERVICE_ACCOUNT        
+      env: FIREBASE_SERVICE_ACCOUNT    
+
+secretEnv:
+  - FIREBASE_SERVICE_ACCOUNT
 
 options:
   logging: CLOUD_LOGGING_ONLY
