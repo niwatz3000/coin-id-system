@@ -50,6 +50,12 @@ steps:
         export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase-sa.json
 
         npm install -g firebase-tools
+        
+        gcloud auth activate-service-account \
+          --key-file=/tmp/firebase-sa.json
+        gcloud config set project gcp-web-example
+        gcloud projects describe gcp-web-example
+
         firebase --version
         firebase deploy \
           --only hosting \

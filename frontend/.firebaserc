@@ -1,0 +1,5 @@
+{
+  "projects": {
+    "default": "gcp-web-example"
+  }
+}
