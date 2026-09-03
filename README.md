@@ -91,4 +91,4 @@ This is an MVP scaffold: business logic (matching algorithm quality, admin UI po
 
 
 ##Dashbaord
-https://console.cloud.google.com/cloud-build/dashboard;region=asia-southeast3?project=gcp-web-example
+https://console.cloud.google.com/cloud-build/dashboard;region=asia-southeast3?project=coin-shop

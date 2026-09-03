@@ -1,5 +1,5 @@
 
-PROJECT_ID="gcp-web-example"
+PROJECT_ID="coin-shop"
 REGION="asia-southeast1"
 
 # 1. Cloud Run Service
@@ -41,12 +41,12 @@ gcloud compute addresses delete coin-id-lb-ip \
 terraform apply -auto-approve
 
 
-gcloud run services list --region=asia-southeast1 --project=gcp-web-example
+gcloud run services list --region=asia-southeast1 --project=coin-shop
 
-gcloud sql instances list --project=gcp-web-example
+gcloud sql instances list --project=coin-shop
 
-gcloud pubsub subscriptions list --project=gcp-web-example
+gcloud pubsub subscriptions list --project=coin-shop
 
-gcloud pubsub topics list --project=gcp-web-example
+gcloud pubsub topics list --project=coin-shop
 
 

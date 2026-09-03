@@ -16,7 +16,7 @@ steps:
       # ดึง Secret Password จาก Secret Manager
       - '--set-secrets=SPRING_DATASOURCE_PASSWORD=coin-id-db-password:latest'
       # เชื่อมต่อ Cloud SQL Instance
-      - '--add-cloudsql-instances=gcp-web-example:asia-southeast1:coin-id-pg'
+      - '--add-cloudsql-instances=coin-shop:asia-southeast1:coin-id-pg'
       - '--platform=managed'
       - '--quiet'
 

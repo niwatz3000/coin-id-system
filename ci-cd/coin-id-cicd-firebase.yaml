@@ -53,8 +53,8 @@ steps:
 
         # gcloud auth activate-service-account \
         #   --key-file=/tmp/firebase-sa.json
-        # gcloud config set project gcp-web-example
-        # gcloud projects describe gcp-web-example
+        # gcloud config set project coin-shop
+        # gcloud projects describe coin-shop
 
         firebase --version
         firebase deploy \
